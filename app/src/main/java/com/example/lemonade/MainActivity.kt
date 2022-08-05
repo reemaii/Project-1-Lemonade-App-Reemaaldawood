@@ -1,5 +1,6 @@
 package com.example.lemonade
 
+import android.annotation.SuppressLint
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.widget.ImageView
@@ -51,11 +52,13 @@ class MainActivity : AppCompatActivity() {
         lemonImage = findViewById(R.id.image_lemon_state)
         setViewElements()
         lemonImage!!.setOnClickListener {
+            clickLemonImage()
             // TODO: call the method that handles the state when the image is clicked
         }
         lemonImage!!.setOnLongClickListener {
+            showSnackbar()
             // TODO: replace 'false' with a call to the function that shows the squeeze count
-            false
+
         }
     }
 
@@ -69,13 +72,40 @@ class MainActivity : AppCompatActivity() {
         outState.putInt(LEMON_SIZE, lemonSize)
         outState.putInt(SQUEEZE_COUNT, squeezeCount)
         super.onSaveInstanceState(outState)
+
     }
 
     /**
      * Clicking will elicit a different response depending on the state.
      * This method determines the state and proceeds with the correct action.
      */
+    var lemon=LemonTree()
     private fun clickLemonImage() {
+        if (lemonadeState == SELECT) {
+            lemonadeState = SQUEEZE
+            lemonSize = lemon.pick()
+            squeezeCount = 0
+        } else
+            if (lemonadeState == SQUEEZE) {
+                squeezeCount = squeezeCount + 1
+                lemonSize = lemonSize - 1
+                   if(lemonSize==0) {
+                       lemonadeState = DRINK}}
+        else
+                   if (lemonadeState==DRINK){
+                       lemonadeState=RESTART
+                       lemonSize=-1
+                   }
+        else
+        if (lemonadeState==RESTART){
+            lemonadeState=SELECT
+        }
+        setViewElements()
+
+
+
+
+
         // TODO: use a conditional statement like 'if' or 'when' to track the lemonadeState
         //  when the image is clicked we may need to change state to the next step in the
         //  lemonade making progression (or at least make some changes to the current state in the
@@ -101,8 +131,33 @@ class MainActivity : AppCompatActivity() {
     /**
      * Set up the view elements according to the state.
      */
+    @SuppressLint("ResourceType")
     private fun setViewElements() {
+        val imagestate:ImageView=findViewById(R.id.image_lemon_state)
         val textAction: TextView = findViewById(R.id.text_action)
+        if (lemonadeState==SELECT){
+            imagestate.setImageResource(R.drawable.lemon_tree)
+            textAction.setText(R.string.lemon_select)
+
+            }
+
+        if (lemonadeState==SQUEEZE){
+            imagestate.setImageResource(R.drawable.lemon_squeeze)
+           // val textAction: String = getString(R.string.lemon_squeeze)
+            textAction.setText(R.string.lemon_squeeze)
+            }
+
+            if (lemonadeState==DRINK){
+                imagestate.setImageResource(R.drawable.lemon_drink)
+                textAction.setText(R.string.lemon_drink)
+                }
+
+                if (lemonadeState==RESTART) {
+                    imagestate.setImageResource(R.drawable.lemon_restart)
+                    textAction.setText(R.string.lemon_empty_glass)
+                }
+
+
         // TODO: set up a conditional that tracks the lemonadeState
 
         // TODO: for each state, the textAction TextView should be set to the corresponding string from
